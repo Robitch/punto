@@ -220,6 +220,9 @@ réglages, service inversé) et « Accueil ».
   du score sont très gros et en gras.
 - **Animations** : courtes (150-250 ms), fluides, respectent `prefers-reduced-motion`.
 - Zones tactiles d'au moins 48 px.
+- **Logo « Point final »** : un p minuscule bleu et son point orange (`design/logo/`).
+  Icône Android adaptative en vecteur (`res/drawable/ic_launcher_foreground.xml`, version
+  monochrome pour les icônes à thème), PNG pour les anciens Android générés depuis le SVG.
 
 ## Conventions de code
 

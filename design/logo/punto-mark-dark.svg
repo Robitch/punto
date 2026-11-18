@@ -1,0 +1,2 @@
+<!-- "Point final" mark alone, for dark backgrounds. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="29 32.5 50 43.5"><g transform="translate(20 20) scale(0.68)"><path fill="#6e98ff" d="M15,26 a6.5,6.5 0 0 1 13,0 V75 a6.5,6.5 0 0 1 -13,0 Z"/><path fill="none" stroke="#6e98ff" stroke-width="13" d="M22,43.5 a19,18.5 0 1 0 38,0 a19,18.5 0 1 0 -38,0 Z"/><path fill="#ff8f45" d="M69.5,61 a7.5,7.5 0 1 0 15,0 a7.5,7.5 0 1 0 -15,0 Z"/></g></svg>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Adaptive icon foreground: blue p, orange point, on @color/ic_launcher_background.
+     "Point final" logo (design/logo/punto.svg): mark drawn in a 100x100 box, scaled to
+     68dp and centred so it stays inside the 66dp safe zone of every launcher mask. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:translateX="20"
+        android:translateY="20"
+        android:scaleX="0.68"
+        android:scaleY="0.68">
+        <path android:fillColor="#FF6E98FF" android:pathData="M15,26 a6.5,6.5 0 0 1 13,0 V75 a6.5,6.5 0 0 1 -13,0 Z" />
+        <path
+            android:fillColor="#00000000"
+            android:strokeColor="#FF6E98FF"
+            android:strokeWidth="13"
+            android:pathData="M22,43.5 a19,18.5 0 1 0 38,0 a19,18.5 0 1 0 -38,0 Z" />
+        <path android:fillColor="#FFFF8F45" android:pathData="M69.5,61 a7.5,7.5 0 1 0 15,0 a7.5,7.5 0 1 0 -15,0 Z" />
+    </group>
+</vector>
