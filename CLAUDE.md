@@ -138,11 +138,16 @@ app/
       *.test.ts
     input/
       pressDetector.ts    # simple / double appui, anti-rebond
-      pressDetector.test.ts
+      pairing.ts          # étapes de l'appairage (bleu puis orange)
+      *.test.ts
   services/
     tags/
       TagService.ts       # interface : connect, onPress(team), status…
-      itagService.ts      # implémentation BLE (Capacitor)
+      itagService.ts      # implémentation BLE : équipes, appairage, persistance
+      tagLink.ts          # connexion à un tag : alarme coupée, bouton, bip, reconnexion
+      bleAdapter.ts       # interface BLE minimale (testable)
+      capacitorBleAdapter.ts # BleAdapter sur @capacitor-community/bluetooth-le
+      fakeBleAdapter.ts   # faux BLE pour les tests et le mode dev `?fake-ble`
       keyboardService.ts  # simulation navigateur : touche A = bleu, L = orange
       uuids.ts
     voice.ts              # TTS (Capacitor) avec fallback Web Speech API

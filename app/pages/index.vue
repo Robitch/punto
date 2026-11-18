@@ -23,6 +23,7 @@ onMounted(async () => {
 /** A match can be resumed only if it is not over. */
 const resumable = computed(() => match.state !== null && match.state.winner === null)
 const summary = computed(() => (match.state ? scoreLine(match.state) : []))
+const tagsPaired = computed(() => tags.kind === 'ble' && TEAMS.every((team) => tags.status[team] !== 'unpaired'))
 
 const TEAM_LABEL: Record<Team, string> = { blue: 'Bleu', orange: 'Orange' }
 
@@ -127,7 +128,7 @@ async function newMatch(): Promise<void> {
             <span class="tags__status">{{ tagStatusLabel(team) }}</span>
           </li>
         </ul>
-        <NuxtLink to="/tags" class="link">Appairer les tags</NuxtLink>
+        <NuxtLink to="/tags" class="link">{{ tagsPaired ? 'Gérer les tags' : 'Appairer les tags' }}</NuxtLink>
       </div>
     </section>
   </main>

@@ -31,11 +31,11 @@ const tagLabel = computed(() => {
     case 'connected':
       return ''
     case 'connecting':
-      return 'Connexion…'
+      return 'Connexion du tag…'
     case 'disconnected':
-      return 'Déconnecté'
+      return 'Tag déconnecté'
     case 'unpaired':
-      return 'Non appairé'
+      return 'Tag non appairé'
   }
   return ''
 })
@@ -43,7 +43,7 @@ const tagLabel = computed(() => {
 const tagTitle = computed(() =>
   props.tagKind === 'keyboard'
     ? `Tag simulé : touche ${KEY_BINDINGS[props.team].toUpperCase()}`
-    : `Tag ${tagLabel.value.toLowerCase() || 'connecté'}`,
+    : tagLabel.value || 'Tag connecté',
 )
 </script>
 
@@ -59,6 +59,7 @@ const tagTitle = computed(() =>
       <p class="team">
         <span>{{ TEAM_LABEL[team] }}</span>
         <span v-if="serving" class="team__ball" role="img" aria-label="au service" />
+        <span v-if="tagKind === 'ble' && tagLabel" class="team__alert">{{ tagLabel }}</span>
       </p>
       <ol v-if="sets.length" class="sets" aria-label="Sets terminés">
         <li v-for="(set, i) in sets" :key="i" :class="{ 'sets__item--won': set.won }">{{ set.value }}</li>
@@ -83,7 +84,6 @@ const tagTitle = computed(() =>
         <span class="tag" :class="`tag--${tagStatus}`" :title="tagTitle" role="status" :aria-label="tagTitle">
           <span class="tag__dot" aria-hidden="true" />
           <kbd v-if="tagKind === 'keyboard'" class="tag__key">{{ tagLabel }}</kbd>
-          <span v-else-if="tagLabel">{{ tagLabel }}</span>
         </span>
       </div>
       <p class="games">
@@ -168,6 +168,13 @@ const tagTitle = computed(() =>
 
 .half--right .team {
   flex-direction: row-reverse;
+}
+
+.team__alert {
+  font-size: 0.5em;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--muted);
 }
 
 .team__ball {
