@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Punto',
   webDir: '.output/public',
   // Dark theme background, avoids a white flash while the WebView starts.
-  backgroundColor: '#08090b',
+  backgroundColor: '#0e0f12',
   plugins: {
     SystemBars: {
       // Edge to edge; the pages pad themselves with env(safe-area-inset-*).

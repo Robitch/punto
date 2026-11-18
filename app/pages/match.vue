@@ -17,6 +17,20 @@ useTagInput()
 
 const ready = ref(false)
 const menuOpen = ref(false)
+/** Buttons (+1, controls, menu) are shown or hidden by tapping the screen. */
+const controlsVisible = ref(true)
+
+const INTERACTIVE = 'button, a, .menu-backdrop, [role="dialog"]'
+
+function onScreenTap(event: MouseEvent): void {
+  // Taps on a button, a link, the menu or the result screen keep their own meaning.
+  // composedPath(), not target.closest(): a button may re-render its icon before the
+  // click bubbles here, detaching the original target from the DOM.
+  const path = event.composedPath()
+  if (path.some((node) => node instanceof Element && node.matches(INTERACTIVE))) return
+  controlsVisible.value = !controlsVisible.value
+  if (!controlsVisible.value) menuOpen.value = false
+}
 
 onMounted(async () => {
   document.documentElement.classList.add('is-locked')
@@ -72,6 +86,11 @@ onBeforeUnmount(() => {
   document.documentElement.classList.remove('is-locked')
 })
 
+/** Leaves the match screen; the match stays saved and can be resumed from home. */
+async function backHome(): Promise<void> {
+  await navigateTo('/')
+}
+
 async function goHome(): Promise<void> {
   match.clear()
   await navigateTo('/')
@@ -84,7 +103,7 @@ function endMatch(): void {
 </script>
 
 <template>
-  <main class="match">
+  <main class="match" @click="onScreenTap">
     <template v-if="ready && state">
       <TransitionGroup tag="div" name="swap" class="match__halves">
         <ScoreHalf
@@ -100,6 +119,7 @@ function endMatch(): void {
           :tag-kind="tags.kind"
           :flash-key="flashKeyOf(half.team)"
           :locked="state.winner !== null"
+          :controls-visible="controlsVisible"
           @score="scorePoint(half.team)"
         />
       </TransitionGroup>
@@ -113,7 +133,17 @@ function endMatch(): void {
         </Transition>
       </div>
 
-      <nav class="controls" aria-label="Contrôles du match">
+      <nav class="controls" :class="{ 'controls--hidden': !controlsVisible }" aria-label="Contrôles du match">
+        <button
+          type="button"
+          class="control"
+          aria-label="Retour à l’accueil, le match reste en cours"
+          title="Retour à l’accueil"
+          @click="backHome"
+        >
+          <AppIcon name="home" />
+        </button>
+        <span class="controls__divider" aria-hidden="true" />
         <button
           type="button"
           class="control"
@@ -240,6 +270,23 @@ function endMatch(): void {
   border-radius: 999px;
   background: var(--bg);
   transform: translateX(-50%);
+}
+
+.controls {
+  transition: opacity 200ms ease, transform 200ms ease, visibility 200ms;
+}
+
+.controls--hidden {
+  visibility: hidden;
+  opacity: 0;
+  transform: translate(-50%, 8px);
+}
+
+.controls__divider {
+  align-self: center;
+  width: 1px;
+  height: 24px;
+  background: var(--line);
 }
 
 .control {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-export type IconName = 'undo' | 'swap' | 'menu' | 'close' | 'sun' | 'moon' | 'back'
+export type IconName = 'undo' | 'swap' | 'menu' | 'close' | 'sun' | 'moon' | 'back' | 'home'
 
 defineProps<{ name: IconName }>()
 </script>
@@ -40,6 +40,10 @@ defineProps<{ name: IconName }>()
     </template>
     <template v-else-if="name === 'moon'">
       <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z" />
+    </template>
+    <template v-else-if="name === 'home'">
+      <path d="M4 10.5 12 4l8 6.5" />
+      <path d="M6 9v10h4.5v-5.5h3V19H18V9" />
     </template>
     <template v-else-if="name === 'back'">
       <path d="M15 18l-6-6 6-6" />

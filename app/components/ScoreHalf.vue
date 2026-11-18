@@ -17,6 +17,8 @@ const props = defineProps<{
   /** Changes on every point scored by this team, to replay the feedback animation. */
   flashKey: number | null
   locked: boolean
+  /** The +1 button is shown or hidden with the other match controls. */
+  controlsVisible: boolean
 }>()
 
 defineEmits<{ score: [] }>()
@@ -75,6 +77,7 @@ const tagTitle = computed(() =>
         <button
           type="button"
           class="plus"
+          :class="{ 'plus--hidden': !controlsVisible }"
           :disabled="locked"
           :aria-label="`Point pour ${TEAM_FULL[team]}`"
           @click="$emit('score')"
@@ -297,7 +300,12 @@ const tagTitle = computed(() =>
   font-size: 18px;
   font-weight: 700;
   cursor: pointer;
-  transition: background-color 150ms ease, transform 150ms ease;
+  transition: background-color 150ms ease, transform 150ms ease, opacity 200ms ease, visibility 200ms;
+}
+
+.plus--hidden {
+  visibility: hidden;
+  opacity: 0;
 }
 
 .plus:hover {

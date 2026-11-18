@@ -4,20 +4,20 @@
  * Every colour goes through these variables.
  * Team colours are tuned per theme so the digits keep a high contrast
  * on their tinted half (WCAG ratio, ≥ 4.5 everywhere):
- *   dark  — blue 6.4, orange 7.7
+ *   dark  — blue 6.0, orange 7.2
  *   light — blue 5.3, orange 4.7
  */
 :root,
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --bg: #08090b;
-  --fg: #eceef2;
+  --bg: #0e0f12;
+  --fg: #e3e5e9;
   --muted: #8a909b;
   --faint: #4a4f58;
   --line: rgb(255 255 255 / 0.08);
   --control: rgb(255 255 255 / 0.06);
   --control-hover: rgb(255 255 255 / 0.12);
-  --overlay: rgb(8 9 11 / 0.82);
+  --overlay: rgb(14 15 18 / 0.82);
   --blue: #6e98ff;
   --orange: #ff8f45;
   --tint: 11%;
