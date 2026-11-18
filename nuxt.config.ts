@@ -5,7 +5,7 @@ export default defineNuxtConfig({
   ssr: false,
   devtools: { enabled: false },
   modules: ['@pinia/nuxt'],
-  css: ['@fontsource-variable/inter', '~/assets/css/main.css'],
+  css: ['@fontsource-variable/archivo/wdth.css', '~/assets/css/main.css'],
   vite: {
     plugins: [tailwindcss()],
   },

@@ -1,1 +1,83 @@
 @import 'tailwindcss';
+
+/*
+ * Every colour goes through these variables.
+ * Team colours are tuned per theme so the digits keep a high contrast
+ * on their tinted half (WCAG ratio, ≥ 4.5 everywhere):
+ *   dark  — blue 6.4, orange 7.7
+ *   light — blue 5.3, orange 4.7
+ */
+:root,
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #08090b;
+  --fg: #eceef2;
+  --muted: #8a909b;
+  --faint: #4a4f58;
+  --line: rgb(255 255 255 / 0.08);
+  --control: rgb(255 255 255 / 0.06);
+  --control-hover: rgb(255 255 255 / 0.12);
+  --overlay: rgb(8 9 11 / 0.82);
+  --blue: #6e98ff;
+  --orange: #ff8f45;
+  --tint: 11%;
+  --flash: 26%;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f3f2ee;
+  --fg: #15171c;
+  --muted: #646a74;
+  --faint: #b4b7bd;
+  --line: rgb(0 0 0 / 0.08);
+  --control: rgb(0 0 0 / 0.05);
+  --control-hover: rgb(0 0 0 / 0.1);
+  --overlay: rgb(243 242 238 / 0.86);
+  --blue: #1e4fd8;
+  --orange: #b23e0c;
+  --tint: 8%;
+  --flash: 20%;
+}
+
+@theme {
+  --font-sans: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-blue: var(--blue);
+  --color-orange: var(--orange);
+}
+
+html,
+body,
+#__nuxt {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
