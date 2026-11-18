@@ -54,8 +54,8 @@ async function newMatch(): Promise<void> {
   <main class="home">
     <header class="home__head">
       <h1 class="brand">
-        Punto
-        <span class="brand__dots" aria-hidden="true"><span /><span /></span>
+        <AppLogo class="brand__logo" aria-hidden="true" />
+        <span>Punto</span>
       </h1>
       <button
         type="button"
@@ -168,8 +168,8 @@ async function newMatch(): Promise<void> {
 
 .brand {
   display: flex;
-  align-items: flex-start;
-  gap: 0.12em;
+  align-items: center;
+  gap: 0.2em;
   margin: 0;
   font-size: clamp(56px, min(22vh, 19vw), 132px);
   font-weight: 800;
@@ -178,21 +178,10 @@ async function newMatch(): Promise<void> {
   line-height: 0.85;
 }
 
-.brand__dots {
-  display: flex;
-  gap: 0.06em;
-  margin-top: 0.1em;
-}
-
-.brand__dots span {
-  width: 0.14em;
-  height: 0.14em;
-  border-radius: 50%;
-  background: var(--blue);
-}
-
-.brand__dots span + span {
-  background: var(--orange);
+/* The app icon, as tall as the capitals of the title. */
+.brand__logo {
+  width: 0.8em;
+  height: 0.8em;
 }
 
 .icon-btn {
