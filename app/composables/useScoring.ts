@@ -24,29 +24,45 @@ export function useScoring() {
 }
 
 /**
- * Listens to the tags (BLE or keyboard) while the calling component is mounted.
+ * Starts the tag service for the whole app lifetime (call once, from app.vue)
+ * and mirrors its statuses in the tags store.
+ */
+export function useTagConnection(): void {
+  const tags = useTagsStore()
+  const service = getTagService()
+  let unsubscribe: (() => void) | null = null
+
+  onMounted(() => {
+    tags.kind = service.kind
+    unsubscribe = service.onStatusChange((statuses) => tags.setStatuses(statuses))
+    void service.start()
+  })
+
+  onBeforeUnmount(() => {
+    unsubscribe?.()
+    void service.stop()
+  })
+}
+
+/**
+ * Scores with the tags while the calling component is mounted.
  * Every press goes through the same PressDetector: single press = point, double press = undo.
  */
 export function useTagInput(): void {
   const { scorePoint, undoPoint } = useScoring()
-  const tags = useTagsStore()
   const service = getTagService()
   const detector = new PressDetector((gesture) => {
     if (gesture.type === 'point') scorePoint(gesture.team)
     else undoPoint()
   })
-  const cleanups: Array<() => void> = []
+  let unsubscribe: (() => void) | null = null
 
   onMounted(() => {
-    tags.kind = service.kind
-    cleanups.push(service.onStatusChange((statuses) => tags.setStatuses(statuses)))
-    cleanups.push(service.onPress((team) => detector.press(team)))
-    void service.start()
+    unsubscribe = service.onPress((team) => detector.press(team))
   })
 
   onBeforeUnmount(() => {
-    for (const cleanup of cleanups) cleanup()
+    unsubscribe?.()
     detector.dispose()
-    void service.stop()
   })
 }
