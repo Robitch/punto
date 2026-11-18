@@ -105,6 +105,10 @@ fonctionnent jusqu'à une dizaine de mètres, même connectés en même temps.
 - **Nos tags (adresses `FF:FF:…`) n'ont pas de service Link Loss (`0x1803`)** : la
   coupure de l'alarme échoue (journalisée). Services présents : `180F` (batterie), `1802`,
   `FFE0` (`FFE1` bouton + `FFE2`…`FFE7` non documentées).
+- **Bip à chaque appui** : nos tags bipent brièvement à chaque appui, même avec les
+  notifications actives. C'est le firmware : aucune caractéristique connue ne le coupe
+  (`FFE2`, `FFE4`, `FFE5`, `FFE7` testées dans nRF Connect, sans effet). Solution retenue :
+  scotch sur le buzzer, ce qui atténue aussi l'alarme de déconnexion.
 - **Appui long** (environ 3 s) : le tag s'éteint. L'app ne doit pas utiliser l'appui
   long comme geste.
 - Les UUID exacts et le comportement peuvent varier selon les modèles : tout ce qui touche
