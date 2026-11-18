@@ -14,6 +14,7 @@ export default defineNuxtConfig({
         '@capacitor/core',
         '@capacitor/preferences',
         '@capacitor/screen-orientation',
+        '@capacitor-community/bluetooth-le',
         '@capacitor-community/keep-awake',
         '@capacitor-community/text-to-speech',
       ],

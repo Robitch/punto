@@ -47,5 +47,10 @@ export function createKeyboardService(): TagService {
       listener(statuses)
       return () => statusListeners.delete(listener)
     },
+    // Keys cannot beep, and there is nothing to pair.
+    async beep() {
+      return false
+    },
+    pairing: null,
   }
 }
