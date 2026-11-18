@@ -67,6 +67,10 @@ const tagTitle = computed(() =>
     <header class="half__head">
       <p class="team">
         <span>{{ TEAM_LABEL[team] }}</span>
+        <span class="tag" :class="`tag--${tagStatus}`" :title="tagTitle" role="status" :aria-label="tagTitle">
+          <span class="tag__dot" aria-hidden="true" />
+          <kbd v-if="tagKind === 'keyboard'" class="tag__key">{{ tagLabel }}</kbd>
+        </span>
         <span v-if="tagKind === 'ble' && tagLabel" class="team__alert">{{ tagLabel }}</span>
       </p>
       <div class="tally">
@@ -113,10 +117,6 @@ const tagTitle = computed(() =>
       >
         +1
       </button>
-      <span class="tag" :class="`tag--${tagStatus}`" :title="tagTitle" role="status" :aria-label="tagTitle">
-        <span class="tag__dot" aria-hidden="true" />
-        <kbd v-if="tagKind === 'keyboard'" class="tag__key">{{ tagLabel }}</kbd>
-      </span>
     </div>
   </section>
 </template>
@@ -184,13 +184,14 @@ const tagTitle = computed(() =>
 .half--right .half__head,
 .half--right .tally,
 .half--right .half__input,
-.half--right .team {
+.half--right .team,
+.half--right .tag {
   flex-direction: row-reverse;
 }
 
 .team {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.6em;
   margin: 0;
   font-size: clamp(15px, 5.5cqh, 28px);
