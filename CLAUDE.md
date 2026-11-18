@@ -100,6 +100,11 @@ fonctionnent jusqu'à une dizaine de mètres, même connectés en même temps.
   journaliser sans planter (le fallback est de retirer le buzzer).
 - **Faire biper un tag** (utile pour l'identifier à l'appairage) : écrire `0x02` puis
   `0x00` sur l'Alert Level (`0x2A06`) du service **Immediate Alert** (`0x1802`).
+  Utiliser une écriture **avec réponse** : nos tags ignorent silencieusement l'écriture
+  sans réponse, bien qu'ils l'annoncent.
+- **Nos tags (adresses `FF:FF:…`) n'ont pas de service Link Loss (`0x1803`)** : la
+  coupure de l'alarme échoue (journalisée). Services présents : `180F` (batterie), `1802`,
+  `FFE0` (`FFE1` bouton + `FFE2`…`FFE7` non documentées).
 - **Appui long** (environ 3 s) : le tag s'éteint. L'app ne doit pas utiliser l'appui
   long comme geste.
 - Les UUID exacts et le comportement peuvent varier selon les modèles : tout ce qui touche
@@ -108,10 +113,10 @@ fonctionnent jusqu'à une dizaine de mètres, même connectés en même temps.
 ### Gestes
 
 - **Appui simple = point** pour l'équipe du tag.
-- **Double appui (deux appuis en moins de ~400 ms) = annuler le dernier point**, quel que
+- **Double appui (deux appuis en moins de ~600 ms) = annuler le dernier point**, quel que
   soit le tag qui a marqué ce point.
 - Implémentation : à la réception d'un appui, ouvrir une fenêtre d'attente (constante
-  `DOUBLE_PRESS_WINDOW_MS`, 400 ms par défaut). Si un second appui du même tag arrive
+  `DOUBLE_PRESS_WINDOW_MS`, 600 ms par défaut). Si un second appui du même tag arrive
   dans la fenêtre, on annule. Sinon, à la fin de la fenêtre, on valide le point. Ignorer
   les rebonds (< 60 ms).
 - Cette logique de détection est une **fonction ou classe pure, testée avec des timers

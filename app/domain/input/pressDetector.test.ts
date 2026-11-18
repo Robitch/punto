@@ -16,8 +16,8 @@ describe('PressDetector', () => {
     vi.useRealTimers()
   })
 
-  it('uses a 400 ms double-press window and a 60 ms debounce by default', () => {
-    expect(DOUBLE_PRESS_WINDOW_MS).toBe(400)
+  it('uses a 600 ms double-press window and a 60 ms debounce by default', () => {
+    expect(DOUBLE_PRESS_WINDOW_MS).toBe(600)
     expect(DEBOUNCE_MS).toBe(60)
   })
 

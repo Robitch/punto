@@ -1,7 +1,7 @@
 import type { Team } from '../score/types'
 
 /** Two presses of the same tag within this delay = undo. */
-export const DOUBLE_PRESS_WINDOW_MS = 400
+export const DOUBLE_PRESS_WINDOW_MS = 600
 /** Presses closer than this to the previous accepted press of the same tag are bounces. */
 export const DEBOUNCE_MS = 60
 

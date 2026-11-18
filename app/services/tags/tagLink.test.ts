@@ -151,22 +151,36 @@ describe('TagLink', () => {
     expect(alerts()).toEqual([ALERT_LEVEL.high, ALERT_LEVEL.none])
   })
 
-  it('falls back to a write with response when the beep write without response fails', async () => {
+  it('beeps with a write with response (the tags ignore writes without response)', async () => {
     const link = createLink()
     link.start()
     await settle()
-    const original = adapter.writeWithoutResponse.bind(adapter)
-    adapter.writeWithoutResponse = async () => {
+    const beep = link.beep()
+    await vi.advanceTimersByTimeAsync(BEEP_DURATION_MS)
+    await beep
+    const alerts = adapter.writes.filter((w) => w.service === ITAG.immediateAlert.service)
+    expect(alerts.map((w) => [w.byte, w.withResponse])).toEqual([
+      [ALERT_LEVEL.high, true],
+      [ALERT_LEVEL.none, true],
+    ])
+  })
+
+  it('falls back to a write without response when the write with response fails', async () => {
+    const link = createLink()
+    link.start()
+    await settle()
+    const original = adapter.write.bind(adapter)
+    adapter.write = async () => {
       throw new Error('not supported')
     }
     const beep = link.beep()
     await vi.advanceTimersByTimeAsync(BEEP_DURATION_MS)
     await beep
-    adapter.writeWithoutResponse = original
+    adapter.write = original
     const alerts = adapter.writes.filter((w) => w.service === ITAG.immediateAlert.service)
     expect(alerts.map((w) => [w.byte, w.withResponse])).toEqual([
-      [ALERT_LEVEL.high, true],
-      [ALERT_LEVEL.none, true],
+      [ALERT_LEVEL.high, false],
+      [ALERT_LEVEL.none, false],
     ])
   })
 

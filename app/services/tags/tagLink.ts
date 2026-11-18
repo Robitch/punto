@@ -159,12 +159,15 @@ export class TagLink {
     }
   }
 
-  /** Immediate Alert is usually "write without response"; some models only accept a write. */
+  /**
+   * Write with response first: the iTags tested silently ignore a "write without response"
+   * on Immediate Alert even though they advertise it. Without response is only a fallback.
+   */
   private async writeAny(service: string, characteristic: string, byte: number): Promise<void> {
     try {
-      await this.adapter.writeWithoutResponse(this.deviceId, service, characteristic, byte)
-    } catch {
       await this.adapter.write(this.deviceId, service, characteristic, byte)
+    } catch {
+      await this.adapter.writeWithoutResponse(this.deviceId, service, characteristic, byte)
     }
   }
 
