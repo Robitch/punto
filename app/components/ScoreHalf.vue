@@ -86,15 +86,19 @@ const tagTitle = computed(() =>
     </header>
 
     <div class="score">
-      <Transition name="ball">
-        <svg v-if="serving" class="ball" viewBox="0 0 24 24" role="img" aria-label="Au service">
-          <circle cx="12" cy="12" r="11" class="ball__body" />
-          <path d="M5 4.2c3.4 3.6 3.4 12 0 15.6M19 4.2c-3.4 3.6-3.4 12 0 15.6" class="ball__seam" />
-        </svg>
-      </Transition>
-      <p class="points" aria-live="polite">
-        <span :key="flashKey ?? 'initial'" class="points__value">{{ points }}</span>
-      </p>
+      <div class="score__inner">
+        <p class="points" aria-live="polite">
+          <span :key="flashKey ?? 'initial'" class="points__value">{{ points }}</span>
+        </p>
+        <!-- Service: the server's score is underlined. Always in the layout, so the score never moves. -->
+        <span
+          class="serve-bar"
+          :class="{ 'serve-bar--on': serving }"
+          :role="serving ? 'img' : undefined"
+          :aria-label="serving ? 'Au service' : undefined"
+          :aria-hidden="serving ? undefined : 'true'"
+        />
+      </div>
     </div>
 
     <!-- Overlaid in the outer bottom corner: shown with the other match controls. -->
@@ -138,7 +142,7 @@ const tagTitle = computed(() =>
   --team: var(--orange);
 }
 
-/* The serving side is a little brighter: readable from afar, together with the ball. */
+/* The serving side is a little brighter, together with the bar under its score. */
 .half--serving {
   background: color-mix(in oklab, var(--team) var(--tint-serving), var(--bg));
 }
@@ -256,12 +260,20 @@ const tagTitle = computed(() =>
   align-items: center;
   justify-content: center;
   min-height: 0;
+  /* Room for the bottom controls, so the serve bar never runs under them. */
+  padding-bottom: clamp(0px, 13cqh, 60px);
+}
+
+.score__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .points {
   margin: 0;
   color: var(--team);
-  font-size: min(62cqh, 60cqw);
+  font-size: min(58cqh, 58cqw);
   font-weight: 800;
   font-stretch: 82%;
   line-height: 0.74;
@@ -282,44 +294,21 @@ const tagTitle = computed(() =>
   }
 }
 
-/* Service: a padel ball next to the score, on the outer side. */
-.ball {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: clamp(36px, 17cqh, 84px);
-  height: clamp(36px, 17cqh, 84px);
-  margin-top: calc(clamp(36px, 17cqh, 84px) / -2);
-  overflow: visible;
-}
-
-.half--right .ball {
-  right: 0;
-  left: auto;
-}
-
-.ball__body {
-  fill: var(--ball);
-  stroke: var(--ball-edge);
-  stroke-width: 1;
-}
-
-.ball__seam {
-  fill: none;
-  stroke: var(--ball-seam);
-  stroke-width: 1.4;
-  stroke-linecap: round;
-}
-
-.ball-enter-active,
-.ball-leave-active {
+/* Service: a thick bar in the team colour under the server's score. */
+.serve-bar {
+  display: block;
+  height: clamp(6px, 2.6cqh, 14px);
+  margin-top: clamp(8px, 4cqh, 20px);
+  border-radius: 999px;
+  background: var(--team);
+  transform: scaleX(0);
+  opacity: 0;
   transition: transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 200ms ease;
 }
 
-.ball-enter-from,
-.ball-leave-to {
-  opacity: 0;
-  transform: scale(0.6);
+.serve-bar--on {
+  transform: scaleX(1);
+  opacity: 1;
 }
 
 .half__input {

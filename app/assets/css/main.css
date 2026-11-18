@@ -23,10 +23,6 @@
   --tint: 11%;
   --tint-serving: 19%;
   --flash: 26%;
-  /* Service ball: padel-ball yellow, the one colour that is neither team. */
-  --ball: #d9ec3e;
-  --ball-seam: rgb(255 255 255 / 0.85);
-  --ball-edge: transparent;
 }
 
 :root[data-theme='light'] {
@@ -44,9 +40,6 @@
   --tint: 8%;
   --tint-serving: 15%;
   --flash: 20%;
-  --ball: #cfe12c;
-  --ball-seam: rgb(255 255 255 / 0.9);
-  --ball-edge: #8c9a12;
 }
 
 @theme {
