@@ -143,7 +143,10 @@ async function newMatch(): Promise<void> {
     'start settings';
   gap: 0 clamp(24px, 6vw, 72px);
   min-height: 100%;
-  padding: clamp(16px, 5vh, 36px) clamp(16px, 5vw, 56px);
+  padding: calc(clamp(16px, 5vh, 36px) + env(safe-area-inset-top))
+    calc(clamp(16px, 5vw, 56px) + env(safe-area-inset-right))
+    calc(clamp(16px, 5vh, 36px) + env(safe-area-inset-bottom))
+    calc(clamp(16px, 5vw, 56px) + env(safe-area-inset-left));
 }
 
 @media (orientation: portrait) {

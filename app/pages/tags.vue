@@ -29,7 +29,10 @@ const tags = useTagsStore()
 <style scoped>
 .tags-page {
   min-height: 100%;
-  padding: clamp(16px, 5vh, 36px) clamp(16px, 5vw, 56px);
+  padding: calc(clamp(16px, 5vh, 36px) + env(safe-area-inset-top))
+    calc(clamp(16px, 5vw, 56px) + env(safe-area-inset-right))
+    calc(clamp(16px, 5vh, 36px) + env(safe-area-inset-bottom))
+    calc(clamp(16px, 5vw, 56px) + env(safe-area-inset-left));
 }
 
 .back {

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 import { DEFAULT_SETTINGS, type DecidingSetFormat, type MatchSettings, type Team } from '~/domain/score/types'
+import { syncSystemBarsTheme } from '~/services/device'
 import { storage } from '~/services/storage'
 
 export type Theme = 'dark' | 'light'
@@ -25,6 +26,7 @@ export const useSettingsStore = defineStore('settings', () => {
 
   function applyTheme(): void {
     document.documentElement.dataset.theme = theme.value
+    void syncSystemBarsTheme(theme.value)
   }
 
   async function load(): Promise<void> {

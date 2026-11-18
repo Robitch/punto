@@ -1,7 +1,9 @@
+import { Preferences } from '@capacitor/preferences'
+import { isNativePlatform } from './platform'
+
 /**
- * Small async key/value store for local persistence.
- * Browser implementation backed by localStorage; it will be swapped for
- * @capacitor/preferences on Android (same async API).
+ * Small async key/value store for local persistence (JSON values).
+ * Android: @capacitor/preferences. Browser: localStorage.
  */
 export interface KeyValueStorage {
   get<T>(key: string): Promise<T | null>
@@ -9,14 +11,22 @@ export interface KeyValueStorage {
   remove(key: string): Promise<void>
 }
 
-const PREFIX = 'padel:'
+const PREFIX = 'punto:'
+
+function parse<T>(raw: string | null): T | null {
+  if (raw === null) return null
+  try {
+    return JSON.parse(raw) as T
+  } catch {
+    return null
+  }
+}
 
 function createLocalStorage(): KeyValueStorage {
   return {
     async get<T>(key: string): Promise<T | null> {
       try {
-        const raw = localStorage.getItem(PREFIX + key)
-        return raw === null ? null : (JSON.parse(raw) as T)
+        return parse<T>(localStorage.getItem(PREFIX + key))
       } catch {
         return null
       }
@@ -38,4 +48,33 @@ function createLocalStorage(): KeyValueStorage {
   }
 }
 
-export const storage: KeyValueStorage = createLocalStorage()
+function createPreferencesStorage(): KeyValueStorage {
+  return {
+    async get<T>(key: string): Promise<T | null> {
+      try {
+        const { value } = await Preferences.get({ key: PREFIX + key })
+        return parse<T>(value)
+      } catch (error) {
+        console.warn('[storage] read failed', key, error)
+        return null
+      }
+    },
+    async set(key, value) {
+      try {
+        await Preferences.set({ key: PREFIX + key, value: JSON.stringify(value) })
+      } catch (error) {
+        console.warn('[storage] write failed', key, error)
+      }
+    },
+    async remove(key) {
+      try {
+        await Preferences.remove({ key: PREFIX + key })
+      } catch (error) {
+        console.warn('[storage] remove failed', key, error)
+      }
+    },
+  }
+}
+
+/** The storage implementation is chosen here, once. */
+export const storage: KeyValueStorage = isNativePlatform() ? createPreferencesStorage() : createLocalStorage()

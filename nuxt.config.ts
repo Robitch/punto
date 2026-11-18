@@ -8,6 +8,16 @@ export default defineNuxtConfig({
   css: ['@fontsource-variable/archivo/wdth.css', '~/assets/css/main.css'],
   vite: {
     plugins: [tailwindcss()],
+    // Pre-bundled up front so the dev server does not reload the page on first use.
+    optimizeDeps: {
+      include: [
+        '@capacitor/core',
+        '@capacitor/preferences',
+        '@capacitor/screen-orientation',
+        '@capacitor-community/keep-awake',
+        '@capacitor-community/text-to-speech',
+      ],
+    },
   },
   typescript: {
     strict: true,

@@ -24,7 +24,8 @@ Pas de compte, pas de serveur, pas de réseau : tout est local et fonctionne hor
   - `@capacitor-community/text-to-speech` : annonce vocale
   - `@capacitor-community/keep-awake` : l'écran reste allumé pendant le match
   - `@capacitor/screen-orientation` : verrouillage en paysage
-  - `@capacitor/status-bar` : plein écran immersif
+  - `SystemBars` (intégré à `@capacitor/core` 8) : plein écran immersif (barre d'état et
+    barre de navigation)
   - `@capacitor/preferences` : persistance locale (tags appairés, thème, match en cours)
 - **Vitest** pour les tests
 - Polices embarquées localement via `@fontsource` (aucun appel réseau)
@@ -38,8 +39,8 @@ npm run dev          # dev dans le navigateur (tags simulés au clavier)
 npm run test         # tests Vitest
 npm run typecheck    # nuxi typecheck
 npm run generate     # build statique
-npx cap sync android # copie le build dans le projet Android
-npx cap run android  # lance sur le téléphone
+npm run android:sync # generate + copie le build dans le projet Android
+npm run android      # android:sync + lance sur le téléphone (débogage sans fil, adb connect)
 ```
 
 ## Règles du padel à implémenter (V1)

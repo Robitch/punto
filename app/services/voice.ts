@@ -1,8 +1,12 @@
+import { TextToSpeech } from '@capacitor-community/text-to-speech'
+import { isNativePlatform } from './platform'
+
 /**
  * Speaks score announcements. Only the text is produced by the domain
  * (`domain/score/announce.ts`); this service only says it.
  *
- * Browser: Web Speech API. Android: @capacitor-community/text-to-speech (later step).
+ * Android: native text-to-speech (@capacitor-community/text-to-speech).
+ * Browser: Web Speech API.
  */
 export interface VoiceService {
   readonly available: boolean
@@ -12,9 +16,32 @@ export interface VoiceService {
 }
 
 const LANG = 'fr-FR'
+const RATE = 1.05
+
+function createNativeVoice(): VoiceService {
+  TextToSpeech.isLanguageSupported({ lang: LANG })
+    .then(({ supported }) => {
+      if (!supported) console.warn(`[voice] ${LANG} is not installed in the Android text-to-speech engine`)
+    })
+    .catch((error: unknown) => console.warn('[voice] language check failed', error))
+
+  return {
+    available: true,
+    speak(text) {
+      if (!text) return
+      // The default queue strategy (Flush) interrupts the announcement in progress.
+      TextToSpeech.speak({ text, lang: LANG, rate: RATE }).catch((error: unknown) =>
+        console.warn('[voice] speak failed', error),
+      )
+    },
+    cancel() {
+      TextToSpeech.stop().catch(() => {})
+    },
+  }
+}
 
 function createWebSpeechVoice(): VoiceService {
-  const synth = typeof window !== 'undefined' && 'speechSynthesis' in window ? window.speechSynthesis : null
+  const synth = 'speechSynthesis' in window ? window.speechSynthesis : null
   let frenchVoice: SpeechSynthesisVoice | null = null
 
   function pickVoice(): void {
@@ -40,7 +67,7 @@ function createWebSpeechVoice(): VoiceService {
       const utterance = new SpeechSynthesisUtterance(text)
       utterance.lang = LANG
       if (frenchVoice) utterance.voice = frenchVoice
-      utterance.rate = 1.05
+      utterance.rate = RATE
       synth.speak(utterance)
     },
     cancel() {
@@ -59,6 +86,9 @@ let instance: VoiceService | null = null
 
 /** The voice implementation is chosen here, once. */
 export function getVoice(): VoiceService {
-  instance ??= typeof window === 'undefined' ? silentVoice : createWebSpeechVoice()
+  if (!instance) {
+    if (typeof window === 'undefined') instance = silentVoice
+    else instance = isNativePlatform() ? createNativeVoice() : createWebSpeechVoice()
+  }
   return instance
 }

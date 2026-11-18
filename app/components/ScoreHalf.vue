@@ -102,7 +102,9 @@ const tagTitle = computed(() =>
   grid-template-rows: auto 1fr auto;
   min-width: 0;
   min-height: 0;
-  padding: clamp(12px, 4.5vh, 28px) clamp(16px, 3vw, 40px) 12px;
+  --pad-x: clamp(16px, 3vw, 40px);
+  padding: calc(clamp(12px, 4.5vh, 28px) + env(safe-area-inset-top)) var(--pad-x)
+    calc(12px + env(safe-area-inset-bottom));
   background: color-mix(in oklab, var(--team) var(--tint), var(--bg));
   container-type: size;
   overflow: hidden;
@@ -111,6 +113,15 @@ const tagTitle = computed(() =>
 
 .half--orange {
   --team: var(--orange);
+}
+
+/* Keep content clear of a camera cutout on the outer edge. */
+.half--left {
+  padding-left: calc(var(--pad-x) + env(safe-area-inset-left));
+}
+
+.half--right {
+  padding-right: calc(var(--pad-x) + env(safe-area-inset-right));
 }
 
 .half__flash {

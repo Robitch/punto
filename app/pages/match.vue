@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useScoring, useTagInput } from '~/composables/useScoring'
 import { currentServer, displayPoints } from '~/domain/score/engine'
 import type { Team } from '~/domain/score/types'
+import { enterMatchMode, exitMatchMode } from '~/services/device'
 import { getVoice } from '~/services/voice'
 import { useMatchStore } from '~/stores/match'
 import { useTagsStore } from '~/stores/tags'
@@ -18,6 +19,7 @@ const ready = ref(false)
 const menuOpen = ref(false)
 
 onMounted(async () => {
+  void enterMatchMode()
   if (!match.state && !(await match.restore())) match.start()
   ready.value = true
 })
@@ -65,6 +67,7 @@ watch(
 onBeforeUnmount(() => {
   clearTimeout(toastTimer)
   getVoice().cancel()
+  void exitMatchMode()
 })
 
 async function goHome(): Promise<void> {
@@ -179,7 +182,7 @@ function endMatch(): void {
 
 .match__top {
   position: absolute;
-  top: clamp(10px, 4vh, 24px);
+  top: calc(clamp(10px, 4vh, 24px) + env(safe-area-inset-top));
   left: 50%;
   display: flex;
   flex-direction: column;
@@ -225,7 +228,7 @@ function endMatch(): void {
 
 .controls {
   position: absolute;
-  bottom: 12px;
+  bottom: calc(12px + env(safe-area-inset-bottom));
   left: 50%;
   display: flex;
   gap: 6px;

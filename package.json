@@ -10,9 +10,17 @@
     "postinstall": "nuxt prepare",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "nuxi typecheck"
+    "typecheck": "nuxi typecheck",
+    "android:sync": "nuxt generate && cap sync android",
+    "android": "npm run android:sync && cap run android"
   },
   "dependencies": {
+    "@capacitor-community/keep-awake": "^8.0.1",
+    "@capacitor-community/text-to-speech": "^8.0.2",
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/core": "^8.6.2",
+    "@capacitor/preferences": "^8.0.1",
+    "@capacitor/screen-orientation": "^8.0.2",
     "@fontsource-variable/archivo": "^5.3.0",
     "@pinia/nuxt": "^1.0.3",
     "nuxt": "^4.6.4",
@@ -21,6 +29,7 @@
     "vue-router": "^5.5.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.6.2",
     "@tailwindcss/vite": "^4.3.5",
     "@types/node": "^26.6.6",
     "tailwindcss": "^4.3.5",
