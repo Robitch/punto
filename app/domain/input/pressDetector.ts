@@ -19,6 +19,7 @@ export interface PressDetectorOptions {
 
 interface PendingPress {
   team: Team
+  at: number
   timer: ReturnType<typeof setTimeout>
 }
 
@@ -51,6 +52,9 @@ export class PressDetector {
     if (last !== undefined && at - last < this.debounceMs) return
     this.lastAcceptedAt.set(team, at)
 
+    // The timer may fire late on a busy device: the timestamps are the reference.
+    if (this.pending && at - this.pending.at >= this.windowMs) this.flush()
+
     if (this.pending?.team === team) {
       clearTimeout(this.pending.timer)
       this.pending = null
@@ -61,6 +65,7 @@ export class PressDetector {
     this.flush()
     this.pending = {
       team,
+      at,
       timer: setTimeout(() => this.flush(), this.windowMs),
     }
   }

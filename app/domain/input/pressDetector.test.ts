@@ -103,6 +103,24 @@ describe('PressDetector', () => {
     ])
   })
 
+  it('relies on timestamps, not only on the timer, when the timer fires late', () => {
+    // Simulates a busy device: time passes but the pending timer has not run yet.
+    let now = 0
+    const late: PressGesture[] = []
+    const d = new PressDetector((g) => late.push(g), { now: () => now })
+    d.press('blue')
+    now = DOUBLE_PRESS_WINDOW_MS + 30
+    d.press('blue')
+    expect(late).toEqual([{ type: 'point', team: 'blue' }])
+    now += 100
+    d.press('blue')
+    expect(late).toEqual([
+      { type: 'point', team: 'blue' },
+      { type: 'undo', team: 'blue' },
+    ])
+    d.dispose()
+  })
+
   it('supports custom delays', () => {
     const custom: PressGesture[] = []
     const d = new PressDetector((g) => custom.push(g), { doublePressWindowMs: 250, debounceMs: 20 })
