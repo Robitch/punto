@@ -56,6 +56,17 @@ body,
   height: 100%;
 }
 
+html {
+  /* The root scroller owns the overscroll effect (glow / stretch on Android). */
+  overscroll-behavior: none;
+}
+
+/* Set while a screen must never move (match): no page scroll at all. */
+html.is-locked,
+html.is-locked body {
+  overflow: hidden;
+}
+
 body {
   margin: 0;
   background: var(--bg);

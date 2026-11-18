@@ -19,6 +19,7 @@ const ready = ref(false)
 const menuOpen = ref(false)
 
 onMounted(async () => {
+  document.documentElement.classList.add('is-locked')
   void enterMatchMode()
   if (!match.state && !(await match.restore())) match.start()
   ready.value = true
@@ -68,6 +69,7 @@ onBeforeUnmount(() => {
   clearTimeout(toastTimer)
   getVoice().cancel()
   void exitMatchMode()
+  document.documentElement.classList.remove('is-locked')
 })
 
 async function goHome(): Promise<void> {
@@ -163,7 +165,8 @@ function endMatch(): void {
   inset: 0;
   overflow: hidden;
   user-select: none;
-  touch-action: manipulation;
+  /* No pan or zoom gesture on the match screen; taps still work. */
+  touch-action: none;
 }
 
 .match__halves {
