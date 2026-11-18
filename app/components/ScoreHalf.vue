@@ -26,6 +26,12 @@ defineEmits<{ score: [] }>()
 const TEAM_LABEL: Record<Team, string> = { blue: 'Bleu', orange: 'Orange' }
 const TEAM_FULL: Record<Team, string> = { blue: 'l’équipe bleue', orange: 'l’équipe orange' }
 
+/**
+ * Sets mirrored around the net: on the right half the most recent set is the closest
+ * to the centre line, so each pair of set scores sits at the same distance from it.
+ */
+const displayedSets = computed(() => (props.side === 'right' ? [...props.sets].reverse() : props.sets))
+
 /** Short status text: hidden when everything is fine, explicit when a tag needs attention. */
 const tagLabel = computed(() => {
   if (props.tagKind === 'keyboard') return KEY_BINDINGS[props.team].toUpperCase()
@@ -52,70 +58,89 @@ const tagTitle = computed(() =>
 <template>
   <section
     class="half"
-    :class="[`half--${side}`, `half--${team}`]"
+    :class="[`half--${side}`, `half--${team}`, { 'half--serving': serving }]"
     :aria-label="team === 'blue' ? 'Équipe bleue' : 'Équipe orange'"
   >
     <div v-if="flashKey !== null" :key="flashKey" class="half__flash" aria-hidden="true" />
 
+    <!-- Head: team name on the outer edge, games and sets towards the net (centre line). -->
     <header class="half__head">
       <p class="team">
         <span>{{ TEAM_LABEL[team] }}</span>
-        <span v-if="serving" class="team__ball" role="img" aria-label="au service" />
         <span v-if="tagKind === 'ble' && tagLabel" class="team__alert">{{ tagLabel }}</span>
       </p>
-      <ol v-if="sets.length" class="sets" aria-label="Sets terminés">
-        <li v-for="(set, i) in sets" :key="i" :class="{ 'sets__item--won': set.won }">{{ set.value }}</li>
-      </ol>
+      <div class="tally">
+        <div v-if="sets.length" class="tally__group">
+          <ol class="sets" aria-label="Sets terminés">
+            <li v-for="(set, i) in displayedSets" :key="i" :class="{ 'sets__item--won': set.won }">
+              {{ set.value }}
+            </li>
+          </ol>
+          <span class="tally__label">{{ sets.length > 1 ? 'sets' : 'set' }}</span>
+        </div>
+        <div class="tally__group">
+          <span class="games">{{ games }}</span>
+          <span class="tally__label">{{ games > 1 ? 'jeux' : 'jeu' }}</span>
+        </div>
+      </div>
     </header>
 
-    <p class="points" aria-live="polite">
-      <span :key="flashKey ?? 'initial'" class="points__value">{{ points }}</span>
-    </p>
-
-    <footer class="half__foot">
-      <div class="half__input">
-        <button
-          type="button"
-          class="plus"
-          :class="{ 'plus--hidden': !controlsVisible }"
-          :disabled="locked"
-          :aria-label="`Point pour ${TEAM_FULL[team]}`"
-          @click="$emit('score')"
-        >
-          +1
-        </button>
-        <span class="tag" :class="`tag--${tagStatus}`" :title="tagTitle" role="status" :aria-label="tagTitle">
-          <span class="tag__dot" aria-hidden="true" />
-          <kbd v-if="tagKind === 'keyboard'" class="tag__key">{{ tagLabel }}</kbd>
-        </span>
-      </div>
-      <p class="games">
-        <span class="games__value">{{ games }}</span>
-        <span class="games__label">{{ games > 1 ? 'jeux' : 'jeu' }}</span>
+    <div class="score">
+      <Transition name="ball">
+        <svg v-if="serving" class="ball" viewBox="0 0 24 24" role="img" aria-label="Au service">
+          <circle cx="12" cy="12" r="11" class="ball__body" />
+          <path d="M5 4.2c3.4 3.6 3.4 12 0 15.6M19 4.2c-3.4 3.6-3.4 12 0 15.6" class="ball__seam" />
+        </svg>
+      </Transition>
+      <p class="points" aria-live="polite">
+        <span :key="flashKey ?? 'initial'" class="points__value">{{ points }}</span>
       </p>
-    </footer>
+    </div>
+
+    <!-- Overlaid in the outer bottom corner: shown with the other match controls. -->
+    <div class="half__input">
+      <button
+        type="button"
+        class="plus"
+        :class="{ 'plus--hidden': !controlsVisible }"
+        :disabled="locked"
+        :aria-label="`Point pour ${TEAM_FULL[team]}`"
+        @click="$emit('score')"
+      >
+        +1
+      </button>
+      <span class="tag" :class="`tag--${tagStatus}`" :title="tagTitle" role="status" :aria-label="tagTitle">
+        <span class="tag__dot" aria-hidden="true" />
+        <kbd v-if="tagKind === 'keyboard'" class="tag__key">{{ tagLabel }}</kbd>
+      </span>
+    </div>
   </section>
 </template>
 
 <style scoped>
 .half {
   --team: var(--blue);
+  --pad-x: clamp(16px, 3vw, 40px);
+  --pad-bottom: calc(12px + env(safe-area-inset-bottom));
   position: relative;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr;
   min-width: 0;
   min-height: 0;
-  --pad-x: clamp(16px, 3vw, 40px);
-  padding: calc(clamp(12px, 4.5vh, 28px) + env(safe-area-inset-top)) var(--pad-x)
-    calc(12px + env(safe-area-inset-bottom));
+  padding: calc(clamp(10px, 4vh, 24px) + env(safe-area-inset-top)) var(--pad-x) var(--pad-bottom);
   background: color-mix(in oklab, var(--team) var(--tint), var(--bg));
   container-type: size;
   overflow: hidden;
-  transition: background-color 200ms ease;
+  transition: background-color 250ms ease;
 }
 
 .half--orange {
   --team: var(--orange);
+}
+
+/* The serving side is a little brighter: readable from afar, together with the ball. */
+.half--serving {
+  background: color-mix(in oklab, var(--team) var(--tint-serving), var(--bg));
 }
 
 /* Keep content clear of a camera cutout on the outer edge. */
@@ -145,69 +170,78 @@ const tagTitle = computed(() =>
   }
 }
 
-/* Head: team name on the outer edge, completed sets towards the centre line. */
 .half__head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
 }
 
 .half--right .half__head,
-.half--right .half__input {
+.half--right .tally,
+.half--right .half__input,
+.half--right .team {
   flex-direction: row-reverse;
 }
 
 .team {
   display: flex;
-  align-items: center;
-  gap: 0.45em;
+  align-items: baseline;
+  gap: 0.6em;
   margin: 0;
-  font-size: clamp(16px, 6.5cqh, 34px);
+  font-size: clamp(15px, 5.5cqh, 28px);
   font-weight: 650;
   letter-spacing: 0.01em;
   color: var(--team);
 }
 
-.half--right .team {
-  flex-direction: row-reverse;
-}
-
 .team__alert {
-  font-size: 0.5em;
+  font-size: 0.6em;
   font-weight: 500;
   letter-spacing: 0;
   color: var(--muted);
 }
 
-.team__ball {
-  width: 0.62em;
-  height: 0.62em;
-  border-radius: 50%;
-  background: var(--team);
-  box-shadow: 0 0 0 0.18em color-mix(in oklab, var(--team) 22%, transparent);
+/* Games and sets: a scoreboard against the net, big enough to read from the court. */
+.tally {
+  display: flex;
+  /* Bottom-aligned: the set scores line up with the foot of the big games number. */
+  align-items: flex-end;
+  gap: clamp(14px, 5cqw, 32px);
 }
 
-.sets {
+.tally__group {
   display: flex;
-  gap: 0.6em;
-  margin: 0 clamp(0px, 12vw, 96px) 0 0;
-  padding: 0;
-  list-style: none;
-  font-size: clamp(16px, 7cqh, 36px);
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.tally__label {
+  font-size: clamp(11px, 3.6cqh, 16px);
   font-weight: 500;
   color: var(--muted);
 }
 
-.half--right .sets {
-  margin: 0 0 0 clamp(0px, 12vw, 96px);
+.games {
+  font-size: clamp(36px, 22cqh, 110px);
+  font-weight: 800;
+  font-stretch: 85%;
+  line-height: 0.82;
+  color: var(--fg);
 }
 
-@media (orientation: portrait) {
-  .sets,
-  .half--right .sets {
-    margin: 0;
-  }
+.sets {
+  display: flex;
+  gap: 0.45em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: clamp(22px, 13cqh, 64px);
+  font-weight: 500;
+  font-stretch: 85%;
+  line-height: 0.82;
+  color: var(--muted);
 }
 
 .sets__item--won {
@@ -216,14 +250,18 @@ const tagTitle = computed(() =>
 }
 
 /* The score: the one thing that has to read from 10 metres. */
-.points {
+.score {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0;
   min-height: 0;
+}
+
+.points {
+  margin: 0;
   color: var(--team);
-  font-size: min(68cqh, 64cqw);
+  font-size: min(62cqh, 60cqw);
   font-weight: 800;
   font-stretch: 82%;
   line-height: 0.74;
@@ -244,48 +282,58 @@ const tagTitle = computed(() =>
   }
 }
 
-.games {
-  grid-row: 1;
-  grid-column: 2;
-  display: flex;
-  align-items: baseline;
-  gap: 0.3em;
-  margin: 0;
-  line-height: 1;
+/* Service: a padel ball next to the score, on the outer side. */
+.ball {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: clamp(36px, 17cqh, 84px);
+  height: clamp(36px, 17cqh, 84px);
+  margin-top: calc(clamp(36px, 17cqh, 84px) / -2);
+  overflow: visible;
 }
 
-.games__value {
-  font-size: clamp(28px, 15cqh, 80px);
-  font-weight: 700;
-  font-stretch: 90%;
-  color: var(--fg);
+.half--right .ball {
+  right: 0;
+  left: auto;
 }
 
-.games__label {
-  font-size: clamp(13px, 4.5cqh, 22px);
-  font-weight: 500;
-  color: var(--muted);
+.ball__body {
+  fill: var(--ball);
+  stroke: var(--ball-edge);
+  stroke-width: 1;
 }
 
-/* Foot: +1 and tag status on the outer edge, games in the middle of the half. */
-.half__foot {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: end;
-  min-height: 48px;
+.ball__seam {
+  fill: none;
+  stroke: var(--ball-seam);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+
+.ball-enter-active,
+.ball-leave-active {
+  transition: transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 200ms ease;
+}
+
+.ball-enter-from,
+.ball-leave-to {
+  opacity: 0;
+  transform: scale(0.6);
 }
 
 .half__input {
-  grid-row: 1;
-  grid-column: 1;
+  position: absolute;
+  bottom: var(--pad-bottom);
+  left: calc(var(--pad-x) + env(safe-area-inset-left));
   display: flex;
   align-items: center;
   gap: 14px;
 }
 
 .half--right .half__input {
-  grid-column: 3;
-  justify-self: end;
+  right: calc(var(--pad-x) + env(safe-area-inset-right));
+  left: auto;
 }
 
 .plus {

@@ -215,13 +215,15 @@ function endMatch(): void {
 
 .match__top {
   position: absolute;
-  top: calc(clamp(10px, 4vh, 24px) + env(safe-area-inset-top));
+  z-index: 1;
+  /* Centred on the net, between the two scores (the top holds games and sets). */
+  top: 50%;
   left: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   pointer-events: none;
 }
 
