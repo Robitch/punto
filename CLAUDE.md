@@ -98,8 +98,8 @@ fonctionnent jusqu'à une dizaine de mètres, même connectés en même temps.
   désactiver, à chaque connexion, écrire `0x00` sur l'Alert Level (`0x2A06`) du service
   **Link Loss** (`0x1803`). Si ce service n'existe pas ou que l'écriture échoue, le
   journaliser sans planter (le fallback est de retirer le buzzer).
-- **Faire biper un tag** (utile pour l'identifier à l'appairage) : écrire `0x02` puis
-  `0x00` sur l'Alert Level (`0x2A06`) du service **Immediate Alert** (`0x1802`).
+- **Faire biper un tag** (utile pour l'identifier à l'appairage) : écrire `0x01` puis
+  `0x00` (`0x02` n'a aucun effet sur nos tags ; valeur dans `BEEP_LEVEL`) sur l'Alert Level (`0x2A06`) du service **Immediate Alert** (`0x1802`).
   Utiliser une écriture **avec réponse** : nos tags ignorent silencieusement l'écriture
   sans réponse, bien qu'ils l'annoncent.
 - **Nos tags (adresses `FF:FF:…`) n'ont pas de service Link Loss (`0x1803`)** : la

@@ -1,12 +1,12 @@
 import type { BleAdapter } from './bleAdapter'
-import { ALERT_LEVEL, ITAG } from './uuids'
+import { ALERT_LEVEL, BEEP_LEVEL, ITAG } from './uuids'
 
 export type LinkStatus = 'connecting' | 'connected' | 'disconnected'
 
 /** Delays between reconnection attempts; the last one repeats. */
 const RECONNECT_DELAYS_MS = [1000, 2000, 5000, 10_000] as const
 export const CONNECT_TIMEOUT_MS = 8000
-/** How long the tag beeps when asked to (between the 0x02 and 0x00 writes). */
+/** How long the tag beeps when asked to (between the BEEP_LEVEL and 0x00 writes). */
 export const BEEP_DURATION_MS = 1200
 
 export function reconnectDelay(attempt: number): number {
@@ -87,7 +87,7 @@ export class TagLink {
     if (this.status !== 'connected') return false
     const { service, alertLevel } = ITAG.immediateAlert
     try {
-      await this.writeAny(service, alertLevel, ALERT_LEVEL.high)
+      await this.writeAny(service, alertLevel, BEEP_LEVEL)
       await new Promise((resolve) => setTimeout(resolve, BEEP_DURATION_MS))
       await this.writeAny(service, alertLevel, ALERT_LEVEL.none)
       return true

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { FakeBleAdapter } from './fakeBleAdapter'
 import { BEEP_DURATION_MS, reconnectDelay, TagLink, type LinkStatus } from './tagLink'
-import { ALERT_LEVEL, ITAG } from './uuids'
+import { ALERT_LEVEL, BEEP_LEVEL, ITAG } from './uuids'
 
 /** Lets pending promises (fake adapter calls) settle without advancing timers. */
 async function settle(): Promise<void> {
@@ -138,17 +138,17 @@ describe('TagLink', () => {
     expect(link.status).toBe('disconnected')
   })
 
-  it('beeps by writing high then none on the immediate alert', async () => {
+  it('beeps by writing the beep level then none on the immediate alert', async () => {
     const link = createLink()
     link.start()
     await settle()
     const beep = link.beep()
     await settle()
     const alerts = () => adapter.writes.filter((w) => w.service === ITAG.immediateAlert.service).map((w) => w.byte)
-    expect(alerts()).toEqual([ALERT_LEVEL.high])
+    expect(alerts()).toEqual([BEEP_LEVEL])
     await vi.advanceTimersByTimeAsync(BEEP_DURATION_MS)
     await beep
-    expect(alerts()).toEqual([ALERT_LEVEL.high, ALERT_LEVEL.none])
+    expect(alerts()).toEqual([BEEP_LEVEL, ALERT_LEVEL.none])
   })
 
   it('beeps with a write with response (the tags ignore writes without response)', async () => {
@@ -160,7 +160,7 @@ describe('TagLink', () => {
     await beep
     const alerts = adapter.writes.filter((w) => w.service === ITAG.immediateAlert.service)
     expect(alerts.map((w) => [w.byte, w.withResponse])).toEqual([
-      [ALERT_LEVEL.high, true],
+      [BEEP_LEVEL, true],
       [ALERT_LEVEL.none, true],
     ])
   })
@@ -179,7 +179,7 @@ describe('TagLink', () => {
     adapter.write = original
     const alerts = adapter.writes.filter((w) => w.service === ITAG.immediateAlert.service)
     expect(alerts.map((w) => [w.byte, w.withResponse])).toEqual([
-      [ALERT_LEVEL.high, false],
+      [BEEP_LEVEL, false],
       [ALERT_LEVEL.none, false],
     ])
   })

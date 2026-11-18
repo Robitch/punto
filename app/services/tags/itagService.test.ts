@@ -83,7 +83,7 @@ describe('iTag service', () => {
     const beep = service.beep('orange')
     await vi.advanceTimersByTimeAsync(5000)
     expect(await beep).toBe(true)
-    expect(adapter.writes.some((w) => w.deviceId === 'O1' && w.byte === 0x02)).toBe(true)
+    expect(adapter.writes.some((w) => w.deviceId === 'O1' && w.byte === 0x01)).toBe(true)
   })
 
   describe('pairing', () => {

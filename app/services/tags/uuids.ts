@@ -28,8 +28,12 @@ export const ITAG = {
 
 export const ALERT_LEVEL = {
   none: 0x00,
+  mild: 0x01,
   high: 0x02,
 } as const
+
+/** Alert level written to make a tag beep (0x02 had no effect on our tags). */
+export const BEEP_LEVEL = ALERT_LEVEL.mild
 
 /** Advertised names of the iTags seen so far ("iTAG", "iTAG            ", "Smart Tag"…). */
 const ITAG_NAME = /\btag\b|itag/i
